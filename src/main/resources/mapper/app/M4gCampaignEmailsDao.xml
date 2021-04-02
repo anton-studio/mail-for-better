@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="io.renren.modules.generator.dao.M4gCampaignEmailsDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="io.renren.modules.generator.entity.M4gCampaignEmailsEntity" id="m4gCampaignEmailsMap">
+        <result property="id" column="id"/>
+        <result property="campaignId" column="campaign_id"/>
+        <result property="emailId" column="email_id"/>
+        <result property="firstOpen" column="first_open"/>
+        <result property="trackingId" column="tracking_id"/>
+        <result property="sendTime" column="send_time"/>
+        <result property="createTime" column="create_time"/>
+    </resultMap>
+
+
+</mapper>

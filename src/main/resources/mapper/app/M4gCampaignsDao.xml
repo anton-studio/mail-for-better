@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="io.renren.modules.generator.dao.M4gCampaignsDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="io.renren.modules.generator.entity.M4gCampaignsEntity" id="m4gCampaignsMap">
+        <result property="id" column="id"/>
+        <result property="ownedBy" column="owned_by"/>
+        <result property="subject" column="subject"/>
+        <result property="body" column="body"/>
+        <result property="fromEmail" column="from_email"/>
+        <result property="status" column="status"/>
+        <result property="sendTime" column="send_time"/>
+        <result property="complaintCount" column="complaint_count"/>
+        <result property="permanentBounceCount" column="permanent_bounce_count"/>
+        <result property="transientBounceCount" column="transient_bounce_count"/>
+        <result property="undeterminedBounceCount" column="undetermined_bounce_count"/>
+        <result property="clickThroughCount" column="click_through_count"/>
+        <result property="openCount" column="open_count"/>
+        <result property="totalSentCount" column="total_sent_count"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="deleteTime" column="delete_time"/>
+        <result property="orderNum" column="order_num"/>
+    </resultMap>
+
+
+</mapper>
