@@ -4,7 +4,7 @@
 <mapper namespace="io.renren.modules.generator.dao.M4gCampaignOpenTrackingDao">
 
 	<!-- 可根据自己的需求，是否要使用 -->
-    <resultMap type="io.renren.modules.generator.entity.M4gCampaignOpenTrackingEntity" id="m4gCampaignOpenTrackingMap">
+    <resultMap type="io.renren.modules.app.entity.M4gCampaignOpenTrackingEntity" id="m4gCampaignOpenTrackingMap">
         <result property="id" column="id"/>
         <result property="trackingId" column="tracking_id"/>
         <result property="createTime" column="create_time"/>

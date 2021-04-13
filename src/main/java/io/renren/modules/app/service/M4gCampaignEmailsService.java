@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import io.renren.common.utils.PageUtils;
 import io.renren.modules.app.entity.M4gCampaignEmailsEntity;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -16,5 +17,7 @@ import java.util.Map;
 public interface M4gCampaignEmailsService extends IService<M4gCampaignEmailsEntity> {
 
     PageUtils queryPage(Map<String, Object> params);
+    void createByList(List<M4gCampaignEmailsEntity> list);
+    M4gCampaignEmailsEntity getByTrackingId(String trackingId);
 }
 

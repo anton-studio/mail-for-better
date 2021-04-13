@@ -4,7 +4,7 @@
 <mapper namespace="io.renren.modules.generator.dao.M4gCampaignEmailsDao">
 
 	<!-- 可根据自己的需求，是否要使用 -->
-    <resultMap type="io.renren.modules.generator.entity.M4gCampaignEmailsEntity" id="m4gCampaignEmailsMap">
+    <resultMap type="io.renren.modules.app.entity.M4gCampaignEmailsEntity" id="m4gCampaignEmailsMap">
         <result property="id" column="id"/>
         <result property="campaignId" column="campaign_id"/>
         <result property="emailId" column="email_id"/>
@@ -12,6 +12,11 @@
         <result property="trackingId" column="tracking_id"/>
         <result property="sendTime" column="send_time"/>
         <result property="createTime" column="create_time"/>
+        <result property="isBounce" column="is_bounce"/>
+        <result property="isComplaint" column="is_complaint"/>
+        <result property="isOpen" column="is_open"/>
+        <result property="isDelivered" column="is_delivered"/>
+        <result property="isReject" column="is_reject"/>
     </resultMap>
 
 

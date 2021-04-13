@@ -1,9 +1,11 @@
 package io.renren.modules.app.service;
 
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.extension.service.IService;
 import io.renren.common.utils.PageUtils;
 import io.renren.modules.app.entity.M4gSubscriberEntity;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -16,5 +18,8 @@ import java.util.Map;
 public interface M4gSubscriberService extends IService<M4gSubscriberEntity> {
 
     PageUtils queryPage(Map<String, Object> params);
+    PageUtils queryPageWithCustomWrapper(Map<String, Object> params, Wrapper wrapper);
+    List<M4gSubscriberEntity> findByTagId(Long id);
+    List<M4gSubscriberEntity> findValidByTagId(Long id);
 }
 

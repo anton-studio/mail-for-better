@@ -1,5 +1,6 @@
 package io.renren.modules.app.service;
 
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.extension.service.IService;
 import io.renren.common.utils.PageUtils;
 import io.renren.modules.app.entity.M4gCampaignsEntity;
@@ -16,5 +17,6 @@ import java.util.Map;
 public interface M4gCampaignsService extends IService<M4gCampaignsEntity> {
 
     PageUtils queryPage(Map<String, Object> params);
+    PageUtils queryPageWithCustomWrapper(Map<String, Object> params, Wrapper wrapper);
 }
 

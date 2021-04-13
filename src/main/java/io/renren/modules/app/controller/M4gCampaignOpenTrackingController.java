@@ -3,6 +3,7 @@ package io.renren.modules.app.controller;
 import java.util.Arrays;
 import java.util.Map;
 
+import io.renren.modules.app.annotation.Login;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -34,6 +35,7 @@ public class M4gCampaignOpenTrackingController {
     /**
      * 列表
      */
+//    @Login
     @RequestMapping("/list")
     @RequiresPermissions("generator:m4gcampaignopentracking:list")
     public R list(@RequestParam Map<String, Object> params){

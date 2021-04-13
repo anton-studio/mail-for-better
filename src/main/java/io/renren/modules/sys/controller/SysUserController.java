@@ -20,6 +20,8 @@ import io.renren.modules.sys.entity.SysUserEntity;
 import io.renren.modules.sys.form.PasswordForm;
 import io.renren.modules.sys.service.SysUserRoleService;
 import io.renren.modules.sys.service.SysUserService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.crypto.hash.Sha256Hash;
@@ -36,6 +38,7 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping("/sys/user")
+@Api
 public class SysUserController extends AbstractController {
 	@Autowired
 	private SysUserService sysUserService;
@@ -48,6 +51,7 @@ public class SysUserController extends AbstractController {
 	 */
 	@GetMapping("/list")
 	@RequiresPermissions("sys:user:list")
+	@ApiOperation("listi all")
 	public R list(@RequestParam Map<String, Object> params){
 		//只有超级管理员，才能查看所有管理员列表
 		if(getUserId() != Constant.SUPER_ADMIN){

@@ -44,6 +44,7 @@ public class M4gCampaignsEntity implements Serializable {
 	 * 1 未发送 2 已定时 3 正在发送 4 发送完成 5 已取消
 	 */
 	private Integer status;
+	private Integer tagId;
 	/**
 	 * 定时发送时间
 	 */
@@ -76,6 +77,10 @@ public class M4gCampaignsEntity implements Serializable {
 	 * total sent 数量
 	 */
 	private Long totalSentCount;
+
+	private Long deliverCount;
+
+	private Long rejectCount;
 	/**
 	 * 
 	 */

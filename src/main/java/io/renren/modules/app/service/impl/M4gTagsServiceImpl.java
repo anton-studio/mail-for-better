@@ -26,4 +26,14 @@ public class M4gTagsServiceImpl extends ServiceImpl<M4gTagsDao, M4gTagsEntity> i
         return new PageUtils(page);
     }
 
+    @Override
+    public PageUtils queryPageWithCustomWrapper(Map<String, Object> params, QueryWrapper wrapper) {
+        IPage<M4gTagsEntity> page = this.page(
+                new Query<M4gTagsEntity>().getPage(params),
+                wrapper
+        );
+
+        return new PageUtils(page);
+    }
+
 }

@@ -4,7 +4,7 @@
 <mapper namespace="io.renren.modules.generator.dao.M4gTagsDao">
 
 	<!-- 可根据自己的需求，是否要使用 -->
-    <resultMap type="io.renren.modules.generator.entity.M4gTagsEntity" id="m4gTagsMap">
+    <resultMap type="io.renren.modules.app.entity.M4gTagsEntity" id="m4gTagsMap">
         <result property="id" column="id"/>
         <result property="tag" column="tag"/>
         <result property="ownedBy" column="owned_by"/>

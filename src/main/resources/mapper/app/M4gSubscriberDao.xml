@@ -4,11 +4,16 @@
 <mapper namespace="io.renren.modules.generator.dao.M4gSubscriberDao">
 
 	<!-- 可根据自己的需求，是否要使用 -->
-    <resultMap type="io.renren.modules.generator.entity.M4gSubscriberEntity" id="m4gSubscriberMap">
+    <resultMap type="io.renren.modules.app.entity.M4gSubscriberEntity" id="m4gSubscriberMap">
         <result property="id" column="id"/>
         <result property="email" column="email"/>
         <result property="name" column="name"/>
         <result property="ownedBy" column="owned_by"/>
+        <result property="tagId" column="tag_id"/>
+        <result property="isBounce" column="is_bounce"/>
+        <result property="isReject" column="is_reject"/>
+        <result property="isValid" column="is_valid"/>
+        <result property="isComplaint" column="is_complaint"/>
         <result property="createTime" column="create_time"/>
         <result property="updateTime" column="update_time"/>
         <result property="deleteTime" column="delete_time"/>

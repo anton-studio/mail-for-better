@@ -3,13 +3,18 @@ package io.renren.modules.app.controller;
 import java.util.Arrays;
 import java.util.Map;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import io.renren.modules.app.annotation.Login;
+import io.renren.modules.app.annotation.LoginUser;
+import io.renren.modules.app.entity.M4gTagsEntity;
+import io.renren.modules.app.entity.UserEntity;
+import io.renren.modules.app.service.EmailService;
+import io.renren.modules.sys.controller.AbstractController;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import io.renren.modules.app.entity.M4gCampaignsEntity;
 import io.renren.modules.app.service.M4gCampaignsService;
@@ -27,17 +32,29 @@ import io.renren.common.utils.R;
  */
 @RestController
 @RequestMapping("generator/m4gcampaigns")
-public class M4gCampaignsController {
+@Api("campaign 接口")
+public class M4gCampaignsController extends AbstractController {
     @Autowired
     private M4gCampaignsService m4gCampaignsService;
+    @Autowired
+    private EmailService emailService;
 
     /**
      * 列表
      */
-    @RequestMapping("/list")
+    @Login
+    @GetMapping("/list")
     @RequiresPermissions("generator:m4gcampaigns:list")
+    @ApiOperation("list")
     public R list(@RequestParam Map<String, Object> params){
-        PageUtils page = m4gCampaignsService.queryPage(params);
+        QueryWrapper<M4gCampaignsEntity> wrapper = new QueryWrapper<>();
+
+        Long userId = getUserId();
+        if (userId != 1l) {
+            wrapper.lambda().eq(M4gCampaignsEntity::getOwnedBy, userId);
+        }
+
+        PageUtils page = m4gCampaignsService.queryPageWithCustomWrapper(params, wrapper);
 
         return R.ok().put("page", page);
     }
@@ -46,8 +63,9 @@ public class M4gCampaignsController {
     /**
      * 信息
      */
-    @RequestMapping("/info/{id}")
+    @GetMapping("/info/{id}")
     @RequiresPermissions("generator:m4gcampaigns:info")
+    @ApiOperation("info")
     public R info(@PathVariable("id") Long id){
 		M4gCampaignsEntity m4gCampaigns = m4gCampaignsService.getById(id);
 
@@ -57,9 +75,12 @@ public class M4gCampaignsController {
     /**
      * 保存
      */
-    @RequestMapping("/save")
+    @PostMapping("/save")
     @RequiresPermissions("generator:m4gcampaigns:save")
+    @ApiOperation("save")
+    @Login
     public R save(@RequestBody M4gCampaignsEntity m4gCampaigns){
+        m4gCampaigns.setOwnedBy(getUserId());
 		m4gCampaignsService.save(m4gCampaigns);
 
         return R.ok();
@@ -68,8 +89,9 @@ public class M4gCampaignsController {
     /**
      * 修改
      */
-    @RequestMapping("/update")
+    @PostMapping("/update")
     @RequiresPermissions("generator:m4gcampaigns:update")
+    @ApiOperation("update")
     public R update(@RequestBody M4gCampaignsEntity m4gCampaigns){
 		m4gCampaignsService.updateById(m4gCampaigns);
 
@@ -79,11 +101,20 @@ public class M4gCampaignsController {
     /**
      * 删除
      */
-    @RequestMapping("/delete")
+    @PostMapping("/delete")
     @RequiresPermissions("generator:m4gcampaigns:delete")
+    @ApiOperation("delete")
     public R delete(@RequestBody Long[] ids){
 		m4gCampaignsService.removeByIds(Arrays.asList(ids));
 
+        return R.ok();
+    }
+
+    @PostMapping("/send/{id}")
+    @ApiOperation("发送 Campaign")
+//    @RequiresPermissions("generator:m4gcampaigns:delete")
+    public R send(@PathVariable Long id){
+        emailService.sendByCampaignId(id);
         return R.ok();
     }
 

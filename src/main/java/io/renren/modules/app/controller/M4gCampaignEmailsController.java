@@ -3,13 +3,10 @@ package io.renren.modules.app.controller;
 import java.util.Arrays;
 import java.util.Map;
 
+import io.swagger.annotations.Api;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import io.renren.modules.app.entity.M4gCampaignEmailsEntity;
 import io.renren.modules.app.service.M4gCampaignEmailsService;
@@ -27,6 +24,7 @@ import io.renren.common.utils.R;
  */
 @RestController
 @RequestMapping("generator/m4gcampaignemails")
+@Api("campaign email 接口")
 public class M4gCampaignEmailsController {
     @Autowired
     private M4gCampaignEmailsService m4gCampaignEmailsService;
@@ -34,7 +32,7 @@ public class M4gCampaignEmailsController {
     /**
      * 列表
      */
-    @RequestMapping("/list")
+    @GetMapping("/list")
     @RequiresPermissions("generator:m4gcampaignemails:list")
     public R list(@RequestParam Map<String, Object> params){
         PageUtils page = m4gCampaignEmailsService.queryPage(params);
@@ -46,7 +44,7 @@ public class M4gCampaignEmailsController {
     /**
      * 信息
      */
-    @RequestMapping("/info/{id}")
+    @GetMapping("/info/{id}")
     @RequiresPermissions("generator:m4gcampaignemails:info")
     public R info(@PathVariable("id") Long id){
 		M4gCampaignEmailsEntity m4gCampaignEmails = m4gCampaignEmailsService.getById(id);
@@ -57,7 +55,7 @@ public class M4gCampaignEmailsController {
     /**
      * 保存
      */
-    @RequestMapping("/save")
+    @PostMapping("/save")
     @RequiresPermissions("generator:m4gcampaignemails:save")
     public R save(@RequestBody M4gCampaignEmailsEntity m4gCampaignEmails){
 		m4gCampaignEmailsService.save(m4gCampaignEmails);
@@ -68,7 +66,7 @@ public class M4gCampaignEmailsController {
     /**
      * 修改
      */
-    @RequestMapping("/update")
+    @PutMapping("/update")
     @RequiresPermissions("generator:m4gcampaignemails:update")
     public R update(@RequestBody M4gCampaignEmailsEntity m4gCampaignEmails){
 		m4gCampaignEmailsService.updateById(m4gCampaignEmails);
@@ -79,7 +77,7 @@ public class M4gCampaignEmailsController {
     /**
      * 删除
      */
-    @RequestMapping("/delete")
+    @DeleteMapping("/delete")
     @RequiresPermissions("generator:m4gcampaignemails:delete")
     public R delete(@RequestBody Long[] ids){
 		m4gCampaignEmailsService.removeByIds(Arrays.asList(ids));

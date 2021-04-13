@@ -39,7 +39,7 @@ public class M4gCampaignEmailsEntity implements Serializable {
 	/**
 	 * tracking ID
 	 */
-	private Long trackingId;
+	private String trackingId;
 	/**
 	 * 邮件发送时间
 	 */
@@ -48,5 +48,11 @@ public class M4gCampaignEmailsEntity implements Serializable {
 	 * 
 	 */
 	private Date createTime;
+
+	private Boolean isBounce;
+	private Boolean isComplaint;
+	private Boolean isOpen;
+	private Boolean isDelivered;
+	private Boolean isReject;
 
 }

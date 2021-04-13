@@ -1,5 +1,6 @@
 package io.renren.modules.app.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import org.springframework.stereotype.Service;
 import java.util.Map;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -21,6 +22,16 @@ public class M4gCampaignsServiceImpl extends ServiceImpl<M4gCampaignsDao, M4gCam
         IPage<M4gCampaignsEntity> page = this.page(
                 new Query<M4gCampaignsEntity>().getPage(params),
                 new QueryWrapper<M4gCampaignsEntity>()
+        );
+
+        return new PageUtils(page);
+    }
+
+    @Override
+    public PageUtils queryPageWithCustomWrapper(Map<String, Object> params, Wrapper wrapper) {
+        IPage<M4gCampaignsEntity> page = this.page(
+                new Query<M4gCampaignsEntity>().getPage(params),
+                wrapper
         );
 
         return new PageUtils(page);

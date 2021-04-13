@@ -3,13 +3,17 @@ package io.renren.modules.app.controller;
 import java.util.Arrays;
 import java.util.Map;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import io.renren.modules.app.annotation.Login;
+import io.renren.modules.app.annotation.LoginUser;
+import io.renren.modules.app.entity.M4gTagsEntity;
+import io.renren.modules.app.entity.UserEntity;
+import io.renren.modules.sys.controller.AbstractController;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import io.renren.modules.app.entity.M4gTemplatesEntity;
 import io.renren.modules.app.service.M4gTemplatesService;
@@ -27,17 +31,25 @@ import io.renren.common.utils.R;
  */
 @RestController
 @RequestMapping("generator/m4gtemplates")
-public class M4gTemplatesController {
+@Api("Template 接口")
+public class M4gTemplatesController extends AbstractController {
     @Autowired
     private M4gTemplatesService m4gTemplatesService;
 
     /**
      * 列表
      */
-    @RequestMapping("/list")
+    @Login
+    @GetMapping("/list")
     @RequiresPermissions("generator:m4gtemplates:list")
+    @ApiOperation("list")
     public R list(@RequestParam Map<String, Object> params){
-        PageUtils page = m4gTemplatesService.queryPage(params);
+        QueryWrapper<M4gTemplatesEntity> wrapper = new QueryWrapper<>();
+        Long userId = getUserId();
+        if (userId != 1l) {
+            wrapper.lambda().eq(M4gTemplatesEntity::getOwnedBy, userId);
+        }
+        PageUtils page = m4gTemplatesService.queryPageWithCustomWrapper(params, wrapper);
 
         return R.ok().put("page", page);
     }
@@ -46,8 +58,9 @@ public class M4gTemplatesController {
     /**
      * 信息
      */
-    @RequestMapping("/info/{id}")
+    @GetMapping("/info/{id}")
     @RequiresPermissions("generator:m4gtemplates:info")
+    @ApiOperation("info")
     public R info(@PathVariable("id") Long id){
 		M4gTemplatesEntity m4gTemplates = m4gTemplatesService.getById(id);
 
@@ -57,9 +70,12 @@ public class M4gTemplatesController {
     /**
      * 保存
      */
-    @RequestMapping("/save")
+    @PostMapping("/save")
     @RequiresPermissions("generator:m4gtemplates:save")
+    @Login
+    @ApiOperation("save")
     public R save(@RequestBody M4gTemplatesEntity m4gTemplates){
+        m4gTemplates.setOwnedBy(getUserId());
 		m4gTemplatesService.save(m4gTemplates);
 
         return R.ok();
@@ -68,8 +84,9 @@ public class M4gTemplatesController {
     /**
      * 修改
      */
-    @RequestMapping("/update")
+    @PostMapping("/update")
     @RequiresPermissions("generator:m4gtemplates:update")
+    @ApiOperation("update")
     public R update(@RequestBody M4gTemplatesEntity m4gTemplates){
 		m4gTemplatesService.updateById(m4gTemplates);
 
@@ -79,8 +96,9 @@ public class M4gTemplatesController {
     /**
      * 删除
      */
-    @RequestMapping("/delete")
+    @PostMapping("/delete")
     @RequiresPermissions("generator:m4gtemplates:delete")
+    @ApiOperation("delete")
     public R delete(@RequestBody Long[] ids){
 		m4gTemplatesService.removeByIds(Arrays.asList(ids));
 

@@ -35,7 +35,7 @@ public class M4gTemplatesEntity implements Serializable {
 	/**
 	 * 是否公开模版
 	 */
-	private Integer is_public;
+	private Boolean isPublic;
 	/**
 	 * 邮箱标题
 	 */

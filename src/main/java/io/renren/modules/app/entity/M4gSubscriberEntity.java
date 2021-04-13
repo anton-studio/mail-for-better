@@ -53,4 +53,9 @@ public class M4gSubscriberEntity implements Serializable {
 	 */
 	private Integer orderNum;
 
+	private Boolean isBounce;
+	private Boolean isComplaint;
+	private Boolean isReject;
+	private Long tagId;
+	private Boolean isValid;
 }

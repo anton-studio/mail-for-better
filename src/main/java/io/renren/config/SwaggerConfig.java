@@ -8,6 +8,7 @@
 
 package io.renren.config;
 
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -36,7 +37,8 @@ public class SwaggerConfig implements WebMvcConfigurer {
             .select()
             //加了ApiOperation注解的类，才生成接口文档
             .apis(RequestHandlerSelectors.withMethodAnnotation(ApiOperation.class))
-            //包下的类，才生成接口文档
+//            .apis(RequestHandlerSelectors.withMethodAnnotation(Api.class))
+                //包下的类，才生成接口文档
             //.apis(RequestHandlerSelectors.basePackage("io.renren.controller"))
             .paths(PathSelectors.any())
             .build()
