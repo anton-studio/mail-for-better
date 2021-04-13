@@ -29,7 +29,7 @@ jobs:
             docker stop mailapi
             docker rm mailapi
             docker rmi stanleyyylau/mail-for-better --force
-            docker run -d -p 6000:6000 -e "SPRING_PROFILES_ACTIVE=${{ secrets.SP_PROFILE_PROD }}" -e "prod_db_url=${{ secrets.PROD_DB_URL }}" -e "prod_db_user=${{ secrets.PROD_DB_USER }}" -e "prod_db_password=${{ secrets.PROD_DB_PASSWORD }}" -e "ali_access_key=${{ secrets.ALI_ACCESS_KEY }}" -e "ali_access_secret=${{ secrets.ALI_ACCESS_SECRET }}" --name mailapi stanleyyylau/mail-for-better
+            docker run -d -p 6000:8080 -e "SPRING_PROFILES_ACTIVE=${{ secrets.SP_PROFILE_PROD }}" -e "prod_db_url=${{ secrets.PROD_DB_URL }}" -e "prod_db_user=${{ secrets.PROD_DB_USER }}" -e "prod_db_password=${{ secrets.PROD_DB_PASSWORD }}" -e "ali_access_key=${{ secrets.ALI_ACCESS_KEY }}" -e "ali_access_secret=${{ secrets.ALI_ACCESS_SECRET }}" --name mailapi stanleyyylau/mail-for-better
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           password: ${{ secrets.PASSWORD }}
