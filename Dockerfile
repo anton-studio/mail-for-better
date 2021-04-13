@@ -5,6 +5,6 @@ COPY src /build/src
 RUN mvn clean package -DskipTests=true
 
 FROM openjdk:8-jre-alpine
-COPY  --from=MAVEN_ENV /target/renren-fast.jar app.jar
+COPY  --from=MAVEN_ENV /build/target/renren-fast.jar app.jar
 EXPOSE 6000
 ENTRYPOINT ["java", "-jar", "app.jar"]
