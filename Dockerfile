@@ -4,7 +4,7 @@ COPY pom.xml /build
 COPY src /build/src
 RUN mvn clean package -DskipTests=true
 
-FROM openjdk:8-jre-alpine
+FROM openjdk:8-jre
 COPY  --from=MAVEN_ENV /build/target/renren-fast.jar app.jar
 EXPOSE 8080
 ENTRYPOINT ["java", "-jar", "app.jar"]
