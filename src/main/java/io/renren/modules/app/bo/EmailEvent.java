@@ -46,6 +46,7 @@ public class EmailEvent {
         private Date timestamp;
         private String source;
         private String messageId;
+        private List<String> destination;
     }
 
     @Data

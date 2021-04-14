@@ -20,6 +20,11 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.TreeSet;
+
+import static java.util.Comparator.comparing;
+import static java.util.stream.Collectors.collectingAndThen;
+import static java.util.stream.Collectors.toCollection;
 
 @Service
 public class EmailServiceImpl implements EmailService {
@@ -74,6 +79,11 @@ public class EmailServiceImpl implements EmailService {
         M4gCampaignsEntity campaignDetail = m4gCampaignsService.getById(id);
         List<M4gSubscriberEntity> subsList = m4gSubscriberService.findValidByTagId(campaignDetail.getTagId());
 
+        // dedup
+        subsList = subsList.stream().collect(
+                collectingAndThen(
+                        toCollection(() -> new TreeSet<>(comparing(M4gSubscriberEntity::getEmail))), ArrayList::new));
+
         // first update campaign to sending
         campaignDetail.setStatus(3);
         m4gCampaignsService.updateById(campaignDetail);
@@ -127,6 +137,7 @@ public class EmailServiceImpl implements EmailService {
                     campaignDetail.setDeliverCount(campaignDetail.getDeliverCount() + 1);
                     m4gCampaignEmailsService.getBaseMapper().updateById(record);
                     m4gCampaignsService.updateById(campaignDetail);
+                    System.out.println("Update delivery for messageId: " + msgId);
                 }
                 break;
             case Open:
@@ -137,6 +148,7 @@ public class EmailServiceImpl implements EmailService {
                     campaignDetail.setOpenCount(campaignDetail.getOpenCount() + 1);
                     m4gCampaignEmailsService.getBaseMapper().updateById(record);
                     m4gCampaignsService.updateById(campaignDetail);
+                    System.out.println("Update open for messageId: " + msgId);
                 }
                 break;
             case Bounce:
@@ -152,6 +164,7 @@ public class EmailServiceImpl implements EmailService {
                     subscriber.setIsBounce(Boolean.TRUE);
                     subscriber.setIsValid(Boolean.FALSE);
                     subscriberService.updateById(subscriber);
+                    System.out.println("Update bounce for messageId: " + msgId);
                 }
                 break;
 
@@ -168,6 +181,7 @@ public class EmailServiceImpl implements EmailService {
                     subscriber.setIsComplaint(Boolean.TRUE);
                     subscriber.setIsValid(Boolean.FALSE);
                     subscriberService.updateById(subscriber);
+                    System.out.println("Update complaint for messageId: " + msgId);
                 }
                 break;
 
@@ -184,6 +198,7 @@ public class EmailServiceImpl implements EmailService {
                     subscriber.setIsReject(Boolean.TRUE);
                     subscriber.setIsValid(Boolean.FALSE);
                     subscriberService.updateById(subscriber);
+                    System.out.println("Update reject for messageId: " + msgId);
                 }
                 break;
             default:

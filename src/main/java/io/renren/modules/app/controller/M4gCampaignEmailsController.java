@@ -1,8 +1,14 @@
 package io.renren.modules.app.controller;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import io.renren.modules.app.bo.StatRecord;
+import io.renren.modules.app.dao.M4gCampaignEmailsDao;
+import io.renren.modules.app.dao.UserDao;
 import io.swagger.annotations.Api;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +34,17 @@ import io.renren.common.utils.R;
 public class M4gCampaignEmailsController {
     @Autowired
     private M4gCampaignEmailsService m4gCampaignEmailsService;
+
+    @Autowired
+    private M4gCampaignEmailsDao m4gCampaignEmailsDao;
+
+    @GetMapping("/all/{id}")
+    @RequiresPermissions("generator:m4gcampaignemails:list")
+    public R list(@PathVariable("id") Long campId){
+
+        List<StatRecord> stats = m4gCampaignEmailsDao.getStatsByCampId(campId);
+        return R.ok().put("data", stats);
+    }
 
     /**
      * 列表

@@ -25,16 +25,15 @@ public class SimpleQueueListener {
     @SqsListener(value = "mail-for-better", deletionPolicy = SqsMessageDeletionPolicy.ON_SUCCESS)
     public void processMessage(String message) {
         try {
-            System.out.println("Received new SQS message" + message.toString() );
-
             // todo: might receive same msg twice
             Map<String, String> msg = OBJECT_MAPPER.readValue(message, HashMap.class);
             String message1 = msg.get("Message");
             EmailEvent event = OBJECT_MAPPER.readValue(message1, EmailEvent.class);
             String messageId = event.getMail().getMessageId();
-            emailService.handleEvent(messageId, event);
 
-            System.out.println(event);
+            System.out.println("New SQS message: " + event.getEventType().toString() + " to: " + event.getMail().getDestination().toString() + "(" +  messageId + ")"  );
+
+            emailService.handleEvent(messageId, event);
         } catch (Exception e) {
             throw new RuntimeException("Cannot process message from SQS", e);
         }
