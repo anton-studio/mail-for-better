@@ -15,6 +15,7 @@ import io.renren.modules.app.service.M4gCampaignsService;
 import io.renren.modules.app.service.M4gSubscriberService;
 import org.jsoup.Jsoup;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -75,6 +76,7 @@ public class EmailServiceImpl implements EmailService {
     }
 
     @Override
+    @Async
     public void sendByCampaignId(Long id) {
         M4gCampaignsEntity campaignDetail = m4gCampaignsService.getById(id);
         List<M4gSubscriberEntity> subsList = m4gSubscriberService.findValidByTagId(campaignDetail.getTagId());
