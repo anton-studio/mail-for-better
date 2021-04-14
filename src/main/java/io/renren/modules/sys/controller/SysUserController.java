@@ -8,14 +8,18 @@
 
 package io.renren.modules.sys.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import io.renren.common.annotation.SysLog;
 import io.renren.common.utils.Constant;
 import io.renren.common.utils.PageUtils;
+import io.renren.common.utils.Query;
 import io.renren.common.utils.R;
 import io.renren.common.validator.Assert;
 import io.renren.common.validator.ValidatorUtils;
 import io.renren.common.validator.group.AddGroup;
 import io.renren.common.validator.group.UpdateGroup;
+import io.renren.modules.app.annotation.Login;
 import io.renren.modules.sys.entity.SysUserEntity;
 import io.renren.modules.sys.form.PasswordForm;
 import io.renren.modules.sys.service.SysUserRoleService;
@@ -23,11 +27,13 @@ import io.renren.modules.sys.service.SysUserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.crypto.hash.Sha256Hash;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -52,6 +58,7 @@ public class SysUserController extends AbstractController {
 	@GetMapping("/list")
 	@RequiresPermissions("sys:user:list")
 	@ApiOperation("listi all")
+	@Login
 	public R list(@RequestParam Map<String, Object> params){
 		//只有超级管理员，才能查看所有管理员列表
 		if(getUserId() != Constant.SUPER_ADMIN){
@@ -59,7 +66,16 @@ public class SysUserController extends AbstractController {
 		}
 		PageUtils page = sysUserService.queryPage(params);
 
-		return R.ok().put("page", page);
+		if (getUserId() == Constant.SUPER_ADMIN) {
+			return R.ok().put("page", page);
+		} else {
+			IPage<SysUserEntity> pageReq = sysUserService.page(
+					new Query<SysUserEntity>().getPage(new HashMap<>()),
+					new QueryWrapper<SysUserEntity>()
+			);
+			page = new PageUtils(pageReq);
+			return R.ok().put("page", page);
+		}
 	}
 	
 	/**
