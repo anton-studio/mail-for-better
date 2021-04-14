@@ -71,8 +71,8 @@ public class EmailServiceImpl implements EmailService {
 
     @Override
     public void sendByCampaignId(Long id) {
-        List<M4gSubscriberEntity> subsList = m4gSubscriberService.findValidByTagId(id);
         M4gCampaignsEntity campaignDetail = m4gCampaignsService.getById(id);
+        List<M4gSubscriberEntity> subsList = m4gSubscriberService.findValidByTagId(campaignDetail.getTagId());
 
         // first update campaign to sending
         campaignDetail.setStatus(3);
