@@ -30,7 +30,7 @@ public class EmailServiceImplTest {
                 "stanleyyylau@gmail.com",
                 "test subject",
                 "hihi stanely<h1>cool</h1>",
-                "hihi stanley");
+                "hihi stanley", 1L);
         System.out.println(s);
     }
 
