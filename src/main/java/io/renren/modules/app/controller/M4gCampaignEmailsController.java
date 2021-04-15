@@ -39,7 +39,7 @@ public class M4gCampaignEmailsController {
     private M4gCampaignEmailsDao m4gCampaignEmailsDao;
 
     @GetMapping("/all/{id}")
-    @RequiresPermissions("generator:m4gcampaignemails:list")
+//    @RequiresPermissions("generator:m4gcampaignemails:list")
     public R list(@PathVariable("id") Long campId){
 
         List<StatRecord> stats = m4gCampaignEmailsDao.getStatsByCampId(campId);

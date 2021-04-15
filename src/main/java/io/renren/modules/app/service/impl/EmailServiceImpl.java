@@ -146,6 +146,7 @@ public class EmailServiceImpl implements EmailService {
                 Boolean isOpen = record.getIsOpen();
                 if (isOpen != Boolean.TRUE) {
                     record.setIsOpen(Boolean.TRUE);
+                    record.setFirstOpen(event.getOpen().get("timestamp").toString());
                     // todo add 1 count for stats
                     campaignDetail.setOpenCount(campaignDetail.getOpenCount() + 1);
                     m4gCampaignEmailsService.getBaseMapper().updateById(record);

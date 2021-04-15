@@ -35,7 +35,7 @@ public class M4gCampaignEmailsEntity implements Serializable {
 	/**
 	 * 首次打开邮件时间
 	 */
-	private Date firstOpen;
+	private String firstOpen;
 	/**
 	 * tracking ID
 	 */
