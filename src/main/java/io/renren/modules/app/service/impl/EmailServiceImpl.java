@@ -125,7 +125,7 @@ public class EmailServiceImpl implements EmailService {
     }
 
     @Override
-    public void handleEvent(String msgId, EmailEvent event) {
+    public synchronized void handleEvent(String msgId, EmailEvent event) {
         M4gCampaignEmailsEntity record = m4gCampaignEmailsService.getByTrackingId(msgId);
         if (record == null) return;
         Long campaignId = record.getCampaignId();
