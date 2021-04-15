@@ -46,7 +46,7 @@ public class EmailServiceImpl implements EmailService {
     static final String CONFIGSET = "stats";
 
     @Override
-    public String sendEmail(String from, String to, String subject, String htmlBody, String textBody) {
+    public String sendEmail(String from, String to, String subject, String htmlBody, String textBody, Long campId) {
         try {
             AmazonSimpleEmailService client =
                     AmazonSimpleEmailServiceClientBuilder.standard()
@@ -54,6 +54,7 @@ public class EmailServiceImpl implements EmailService {
                             // Amazon SES.
                             .withRegion(Regions.US_EAST_1).build();
             SendEmailRequest request = new SendEmailRequest()
+                    .withTags(new MessageTag().withName("campId").withValue(campId.toString()))
                     .withDestination(
                             new Destination().withToAddresses(to))
                     .withMessage(new Message()
@@ -101,7 +102,7 @@ public class EmailServiceImpl implements EmailService {
         for (M4gSubscriberEntity subs : subsList) {
             String to = subs.getEmail();
             try {
-                String messageId = this.sendEmail(fromEmail, to, subject, this.renderTemplate(body, subs), this.renderTemplate(bodyPaint, subs));
+                String messageId = this.sendEmail(fromEmail, to, subject, this.renderTemplate(body, subs), this.renderTemplate(bodyPaint, subs), id);
                 M4gCampaignEmailsEntity record = new M4gCampaignEmailsEntity();
                 record.setCampaignId(id);
                 record.setEmailId(subs.getId());
