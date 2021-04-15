@@ -173,7 +173,7 @@ public class EmailServiceImpl implements EmailService {
             case Complaint:
                 Boolean isComplaint = record.getIsComplaint();
                 if (isComplaint != Boolean.TRUE) {
-                    record.setIsBounce(Boolean.TRUE);
+                    record.setIsComplaint(Boolean.TRUE);
                     // todo add 1 count for stats
                     campaignDetail.setComplaintCount(campaignDetail.getComplaintCount() + 1);
                     m4gCampaignEmailsService.getBaseMapper().updateById(record);
