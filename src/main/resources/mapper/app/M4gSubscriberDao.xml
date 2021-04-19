@@ -80,4 +80,34 @@
         </if>
     </select>
 
+    <select id="exportWithFilter" resultType="io.renren.modules.app.entity.M4gSubscriberEntity">
+        select subs.* from m4g_subscriber subs
+        <if test="params.tagIds != null">
+            left join m4g_subs_real_tags m4gsrt on subs.id = m4gsrt.subs_id
+        </if>
+        <where>
+            <if test="params.ownedBy != null">
+                subs.owned_by = #{params.ownedBy}
+            </if>
+            <if test="params.key != null">
+                AND subs.email LIKE CONCAT('%',#{params.key},'%')
+            </if>
+            <if test="params.categoryIds != null">
+                AND subs.tag_id in
+                <foreach item="catId" collection="params.categoryIds"  open="(" separator="," close=")">
+                    #{catId}
+                </foreach>
+            </if>
+            <if test="params.tagIds != null">
+                AND m4gsrt.tag_id in
+                <foreach item="tagId" collection="params.tagIds"  open="(" separator="," close=")">
+                    #{tagId}
+                </foreach>
+            </if>
+        </where>
+        <if test="params.tagIds != null">
+            group by subs.id
+        </if>
+    </select>
+
 </mapper>

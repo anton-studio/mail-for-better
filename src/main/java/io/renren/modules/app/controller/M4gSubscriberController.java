@@ -1,8 +1,12 @@
 package io.renren.modules.app.controller;
 
+import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.opencsv.CSVWriter;
 import io.renren.modules.app.dao.M4gSubsRealTagsDao;
 import io.renren.modules.app.dao.M4gSubscriberDao;
 import io.renren.modules.app.entity.M4gSubsRealTagsEntity;
@@ -24,6 +28,7 @@ import io.renren.modules.app.service.M4gSubscriberService;
 import io.renren.common.utils.PageUtils;
 import io.renren.common.utils.R;
 
+import javax.servlet.http.HttpServletResponse;
 
 
 /**
@@ -85,11 +90,56 @@ public class M4gSubscriberController extends AbstractController {
         return R.ok().put("data", validEntities);
     }
 
+    @GetMapping("/export")
+    @RequiresPermissions("generator:m4gsubscriber:list")
+    @ApiOperation("export")
+    public void export(@RequestParam Map<String, Object> params, HttpServletResponse response) throws IOException {
+        Long userId = getUserId();
+        if (userId != 1l) {
+            params.put("ownedBy", userId);
+        }
+        if (params.get("categoryIds") != null) {
+            String[] categoryIds = ((String) params.get("categoryIds")).split(",");
+            List<Long> catList = new ArrayList<>();
+            for (String categoryId : categoryIds) {
+                catList.add(Long.valueOf(categoryId));
+            }
+            params.put("categoryIds", catList);
+        }
+        if (params.get("tags") != null && !StringUtils.isEmpty(params.get("tags"))) {
+            String[] tagIds = ((String) params.get("tags")).split(",");
+            List<Long> tagList = new ArrayList<>();
+            for (String categoryId : tagIds) {
+                tagList.add(Long.valueOf(categoryId));
+            }
+            params.put("tagIds", tagList);
+        }
+
+        String[] header = {"email", "name"};
+        List<String[]> list = new ArrayList<>();
+        list.add(header);
+        List<M4gSubscriberEntity> m4gSubscriberEntities = subscriberDao.exportWithFilter(params);
+        for (M4gSubscriberEntity m4gSubscriberEntity : m4gSubscriberEntities) {
+            String[] record = {m4gSubscriberEntity.getEmail(), m4gSubscriberEntity.getName()};
+            list.add(record);
+        }
+
+        response.setContentType("text/csv");
+        DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
+        String currentDateTime = dateFormatter.format(new Date());
+        String headerKey = "Content-Disposition";
+        String headerValue = "attachment; filename=client_" + currentDateTime + ".csv";
+        response.setHeader(headerKey, headerValue);
+        try (CSVWriter writer = new CSVWriter(response.getWriter())) {
+            writer.writeAll(list);
+        }
+    }
+
     @GetMapping("/listv2")
     @Login
     @RequiresPermissions("generator:m4gsubscriber:list")
     @ApiOperation("list")
-    public R listv2(@RequestParam Map<String, Object> params){
+    public R listv2(@RequestParam Map<String, Object> params) {
         Long userId = getUserId();
         if (userId != 1l) {
             params.put("ownedBy", userId);

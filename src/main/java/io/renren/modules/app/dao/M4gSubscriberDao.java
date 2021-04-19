@@ -23,4 +23,5 @@ public interface M4gSubscriberDao extends BaseMapper<M4gSubscriberEntity> {
     IPage<M4gSubscriberEntity> selectPageWithFilter(IPage<M4gSubscriberEntity> page, Map<String, Object> params);
     List<M4gSubscriberEntity> findValidByParams(@Param("params") Map<String, Object> params);
     void disAbleAllByEmailAddress(@Param("emailArr") String emailArr);
+    List<M4gSubscriberEntity> exportWithFilter(@Param("params") Map<String, Object> params);
 }
