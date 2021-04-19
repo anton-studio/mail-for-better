@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="io.renren.modules.app.dao.M4gSubsRealTagsDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="io.renren.modules.app.entity.M4gSubsRealTagsEntity" id="m4gSubsRealTagsMap">
+        <result property="id" column="id"/>
+        <result property="subsId" column="subs_id"/>
+        <result property="tagId" column="tag_id"/>
+        <result property="ownedBy" column="owned_by"/>
+    </resultMap>
+
+    <delete id="deleteBySubIdAndTagIds">
+        delete from m4g_subs_real_tags
+        where subs_id = #{subsId} and tag_id in
+        <foreach item="tagId" collection="tagIds"  open="(" separator="," close=")">
+            #{tagId}
+        </foreach>
+    </delete>
+
+    <delete id="deleteBySubsIds">
+        delete from m4g_subs_real_tags
+        where subs_id in
+        <foreach item="subsId" collection="subsIds"  open="(" separator="," close=")">
+            #{subsId}
+        </foreach>
+    </delete>
+
+    <select id="getByTagIds" resultType="io.renren.modules.app.entity.M4gSubsRealTagsEntity">
+        select * from m4g_subs_real_tags
+        where subs_id in
+        <foreach item="subsId" collection="subsIds"  open="(" separator="," close=")">
+            #{subsId}
+        </foreach>
+    </select>
+
+
+</mapper>

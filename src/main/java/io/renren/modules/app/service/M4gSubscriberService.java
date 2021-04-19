@@ -19,7 +19,11 @@ public interface M4gSubscriberService extends IService<M4gSubscriberEntity> {
 
     PageUtils queryPage(Map<String, Object> params);
     PageUtils queryPageWithCustomWrapper(Map<String, Object> params, Wrapper wrapper);
+    PageUtils queryPageWithFilter(Map<String, Object> params);
     List<M4gSubscriberEntity> findByTagId(Long id);
     List<M4gSubscriberEntity> findValidByTagId(Long id);
+    void saveSubsWithTags(M4gSubscriberEntity entity, List<Long> tags);
+    void updateEntityWithTags(M4gSubscriberEntity entity, List<Long> tags);
+    void removeByIdsCascade(List<Long> subsIds);
 }
 

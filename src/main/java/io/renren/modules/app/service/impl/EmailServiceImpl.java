@@ -6,6 +6,8 @@ import com.amazonaws.services.simpleemail.AmazonSimpleEmailServiceClientBuilder;
 import com.amazonaws.services.simpleemail.model.*;
 import io.renren.common.exception.RRException;
 import io.renren.modules.app.bo.EmailEvent;
+import io.renren.modules.app.dao.M4gCampaignsDao;
+import io.renren.modules.app.dao.M4gSubscriberDao;
 import io.renren.modules.app.entity.M4gCampaignEmailsEntity;
 import io.renren.modules.app.entity.M4gCampaignsEntity;
 import io.renren.modules.app.entity.M4gSubscriberEntity;
@@ -17,11 +19,9 @@ import org.jsoup.Jsoup;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.TreeSet;
+import java.util.*;
 
 import static java.util.Comparator.comparing;
 import static java.util.stream.Collectors.collectingAndThen;
@@ -34,6 +34,9 @@ public class EmailServiceImpl implements EmailService {
     M4gSubscriberService m4gSubscriberService;
 
     @Autowired
+    M4gCampaignsDao campaignsDao;
+
+    @Autowired
     M4gCampaignsService m4gCampaignsService;
 
     @Autowired
@@ -41,6 +44,9 @@ public class EmailServiceImpl implements EmailService {
 
     @Autowired
     M4gSubscriberService subscriberService;
+
+    @Autowired
+    M4gSubscriberDao subscriberDao;
 
     // config set ensure bounce stats info are sent to simple message and queue
     static final String CONFIGSET = "stats";
@@ -80,7 +86,23 @@ public class EmailServiceImpl implements EmailService {
     @Async
     public void sendByCampaignId(Long id) {
         M4gCampaignsEntity campaignDetail = m4gCampaignsService.getById(id);
-        List<M4gSubscriberEntity> subsList = m4gSubscriberService.findValidByTagId(campaignDetail.getTagId());
+        Long tagId = campaignDetail.getTagId();
+        Map<String, Object> param = new HashMap<>();
+        List<Long> categoryIds = new ArrayList<>();
+        categoryIds.add(tagId);
+        param.put("categoryIds", categoryIds);
+
+        String tagIds1 = campaignDetail.getTagIds();
+        if (StringUtils.hasText(tagIds1)) {
+            String[] tagIdsArray = tagIds1.split(",");
+            List<Long> tagIds = new ArrayList<>();
+            for (String tag : tagIdsArray) {
+                tagIds.add(Long.valueOf(tag));
+            }
+            param.put("tagIds", tagIds);
+        }
+
+        List<M4gSubscriberEntity> subsList = subscriberDao.findValidByParams(param);
 
         // dedup
         subsList = subsList.stream().collect(
@@ -117,11 +139,10 @@ public class EmailServiceImpl implements EmailService {
                 // throw new RRException("一个以上邮件发送失败，请检查你的收件人等邮件配置。");
             }
         }
-        // update tracking Id(messageId)
+//         update tracking Id(messageId)
 //        m4gCampaignEmailsService.createByList(campaignEmailsEntityList);
-        campaignDetail.setTotalSentCount(Long.valueOf(campaignEmailsEntityList.size()));
-        campaignDetail.setStatus(4);
-        m4gCampaignsService.updateById(campaignDetail);
+        campaignsDao.updateSendTotalById(campaignDetail.getId(), Long.valueOf(campaignEmailsEntityList.size()));
+//        m4gCampaignsService.updateById(campaignDetail);
     }
 
     @Override
@@ -129,7 +150,7 @@ public class EmailServiceImpl implements EmailService {
         M4gCampaignEmailsEntity record = m4gCampaignEmailsService.getByTrackingId(msgId);
         if (record == null) return;
         Long campaignId = record.getCampaignId();
-        M4gCampaignsEntity campaignDetail = m4gCampaignsService.getById(campaignId);
+//        M4gCampaignsEntity campaignDetail = m4gCampaignsService.getById(campaignId);
         EmailEvent.EventType eventType = event.getEventType();
         switch (eventType) {
             case Delivery:
@@ -137,9 +158,10 @@ public class EmailServiceImpl implements EmailService {
                 if (isDelivered != Boolean.TRUE) {
                     record.setIsDelivered(Boolean.TRUE);
                     // todo: also add 1 count for campaign stats
-                    campaignDetail.setDeliverCount(campaignDetail.getDeliverCount() + 1);
+//                    campaignDetail.setDeliverCount(campaignDetail.getDeliverCount() + 1);
                     m4gCampaignEmailsService.getBaseMapper().updateById(record);
-                    m4gCampaignsService.updateById(campaignDetail);
+//                    m4gCampaignsService.updateById(campaignDetail);
+                    campaignsDao.incrementByField(campaignId, "deliver_count");
                     System.out.println("Update delivery for messageId: " + msgId);
                 }
                 break;
@@ -149,9 +171,9 @@ public class EmailServiceImpl implements EmailService {
                     record.setIsOpen(Boolean.TRUE);
                     record.setFirstOpen(event.getOpen().get("timestamp").toString());
                     // todo add 1 count for stats
-                    campaignDetail.setOpenCount(campaignDetail.getOpenCount() + 1);
+//                    campaignDetail.setOpenCount(campaignDetail.getOpenCount() + 1);
                     m4gCampaignEmailsService.getBaseMapper().updateById(record);
-                    m4gCampaignsService.updateById(campaignDetail);
+                    campaignsDao.incrementByField(campaignId, "open_count");
                     System.out.println("Update open for messageId: " + msgId);
                 }
                 break;
@@ -160,14 +182,17 @@ public class EmailServiceImpl implements EmailService {
                 if (isBounce != Boolean.TRUE) {
                     record.setIsBounce(Boolean.TRUE);
                     // todo add 1 count for stats
-                    campaignDetail.setPermanentBounceCount(campaignDetail.getPermanentBounceCount() + 1);
+//                    campaignDetail.setPermanentBounceCount(campaignDetail.getPermanentBounceCount() + 1);
                     m4gCampaignEmailsService.getBaseMapper().updateById(record);
-                    m4gCampaignsService.updateById(campaignDetail);
+                    campaignsDao.incrementByField(campaignId, "permanent_bounce_count");
+//                    m4gCampaignsService.updateById(campaignDetail);
                     // disable the email
                     M4gSubscriberEntity subscriber = subscriberService.getById(record.getEmailId());
                     subscriber.setIsBounce(Boolean.TRUE);
                     subscriber.setIsValid(Boolean.FALSE);
                     subscriberService.updateById(subscriber);
+                    // disable relavent emails
+                    subscriberDao.disAbleAllByEmailAddress(subscriber.getEmail());
                     System.out.println("Update bounce for messageId: " + msgId);
                 }
                 break;
@@ -177,14 +202,17 @@ public class EmailServiceImpl implements EmailService {
                 if (isComplaint != Boolean.TRUE) {
                     record.setIsComplaint(Boolean.TRUE);
                     // todo add 1 count for stats
-                    campaignDetail.setComplaintCount(campaignDetail.getComplaintCount() + 1);
+//                    campaignDetail.setComplaintCount(campaignDetail.getComplaintCount() + 1);
                     m4gCampaignEmailsService.getBaseMapper().updateById(record);
-                    m4gCampaignsService.updateById(campaignDetail);
+                    campaignsDao.incrementByField(campaignId, "complaint_count");
+//                    m4gCampaignsService.updateById(campaignDetail);
                     // disable the email
                     M4gSubscriberEntity subscriber = subscriberService.getById(record.getEmailId());
                     subscriber.setIsComplaint(Boolean.TRUE);
                     subscriber.setIsValid(Boolean.FALSE);
                     subscriberService.updateById(subscriber);
+                    // disable relavent emails
+                    subscriberDao.disAbleAllByEmailAddress(subscriber.getEmail());
                     System.out.println("Update complaint for messageId: " + msgId);
                 }
                 break;
@@ -194,14 +222,17 @@ public class EmailServiceImpl implements EmailService {
                 if (isReject != Boolean.TRUE) {
                     record.setIsReject(Boolean.TRUE);
                     // todo add 1 count for stats
-                    campaignDetail.setRejectCount(campaignDetail.getRejectCount() + 1);
+//                    campaignDetail.setRejectCount(campaignDetail.getRejectCount() + 1);
                     m4gCampaignEmailsService.getBaseMapper().updateById(record);
-                    m4gCampaignsService.updateById(campaignDetail);
+                    campaignsDao.incrementByField(campaignId, "reject_count");
+//                    m4gCampaignsService.updateById(campaignDetail);
                     // disable the email
                     M4gSubscriberEntity subscriber = subscriberService.getById(record.getEmailId());
                     subscriber.setIsReject(Boolean.TRUE);
                     subscriber.setIsValid(Boolean.FALSE);
                     subscriberService.updateById(subscriber);
+                    // disable relavent emails
+                    subscriberDao.disAbleAllByEmailAddress(subscriber.getEmail());
                     System.out.println("Update reject for messageId: " + msgId);
                 }
                 break;

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="io.renren.modules.generator.dao.M4gSubscriberDao">
+<mapper namespace="io.renren.modules.app.dao.M4gSubscriberDao">
 
 	<!-- 可根据自己的需求，是否要使用 -->
     <resultMap type="io.renren.modules.app.entity.M4gSubscriberEntity" id="m4gSubscriberMap">
@@ -19,6 +19,62 @@
         <result property="deleteTime" column="delete_time"/>
         <result property="orderNum" column="order_num"/>
     </resultMap>
+    <update id="disAbleAllByEmailAddress">
+        update m4g_subscriber set
+                is_valid = 0
+                where email = #{emailArr}
+    </update>
 
+    <select id="selectPageWithFilter" resultMap="m4gSubscriberMap">
+        select subs.* from m4g_subscriber subs
+        <if test="params.tagIds != null">
+            left join m4g_subs_real_tags m4gsrt on subs.id = m4gsrt.subs_id
+        </if>
+        <where>
+            <if test="params.ownedBy != null">
+                subs.owned_by = #{params.ownedBy}
+            </if>
+            <if test="params.categoryIds != null">
+                AND subs.tag_id in
+                <foreach item="catId" collection="params.categoryIds"  open="(" separator="," close=")">
+                    #{catId}
+                </foreach>
+            </if>
+            <if test="params.tagIds != null">
+                AND m4gsrt.tag_id in
+                <foreach item="tagId" collection="params.tagIds"  open="(" separator="," close=")">
+                    #{tagId}
+                </foreach>
+            </if>
+        </where>
+        <if test="params.tagIds != null">
+            group by subs.id
+        </if>
+    </select>
+
+    <select id="findValidByParams" resultType="io.renren.modules.app.entity.M4gSubscriberEntity">
+        select subs.* from m4g_subscriber subs
+        <if test="params.tagIds != null">
+            left join m4g_subs_real_tags m4gsrt on subs.id = m4gsrt.subs_id
+        </if>
+        <where>
+            subs.is_valid = 1
+            <if test="params.categoryIds != null">
+                AND subs.tag_id in
+                <foreach item="catId" collection="params.categoryIds"  open="(" separator="," close=")">
+                    #{catId}
+                </foreach>
+            </if>
+            <if test="params.tagIds != null">
+                AND m4gsrt.tag_id in
+                <foreach item="tagId" collection="params.tagIds"  open="(" separator="," close=")">
+                    #{tagId}
+                </foreach>
+            </if>
+        </where>
+        <if test="params.tagIds != null">
+            group by subs.id
+        </if>
+    </select>
 
 </mapper>

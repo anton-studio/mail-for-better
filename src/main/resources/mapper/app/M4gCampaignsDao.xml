@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="io.renren.modules.generator.dao.M4gCampaignsDao">
+<mapper namespace="io.renren.modules.app.dao.M4gCampaignsDao">
 
 	<!-- 可根据自己的需求，是否要使用 -->
     <resultMap type="io.renren.modules.app.entity.M4gCampaignsEntity" id="m4gCampaignsMap">
@@ -27,6 +27,18 @@
         <result property="deleteTime" column="delete_time"/>
         <result property="orderNum" column="order_num"/>
     </resultMap>
+    <update id="updateSendTotalById">
+        update m4g_campaigns
+        set total_sent_count = #{totalSentCount},
+            status = 4
+        where id = #{id}
+    </update>
+
+    <update id="incrementByField">
+        update m4g_campaigns set
+            #{field} = #{field} + 1
+        where id = #{id}
+    </update>
 
 
 </mapper>

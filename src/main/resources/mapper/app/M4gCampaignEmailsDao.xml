@@ -19,6 +19,12 @@
         <result property="isReject" column="is_reject"/>
     </resultMap>
 
+    <update id="incrementByField">
+        update m4g_campaigns set
+            #{field} = #{field} + 1
+            where id = #{id}
+    </update>
+
     <select id="getStatsByCampId" resultType="io.renren.modules.app.bo.StatRecord">
         select stats.*, mlist.email, mlist.name
         from m4g_campaign_emails as stats join m4g_subscriber as mlist on stats.email_id = mlist.id
