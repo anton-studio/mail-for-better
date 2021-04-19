@@ -34,6 +34,9 @@
             <if test="params.ownedBy != null">
                 subs.owned_by = #{params.ownedBy}
             </if>
+            <if test="params.key != null">
+                AND subs.email LIKE CONCAT('%',#{params.key},'%')
+            </if>
             <if test="params.categoryIds != null">
                 AND subs.tag_id in
                 <foreach item="catId" collection="params.categoryIds"  open="(" separator="," close=")">
