@@ -35,8 +35,24 @@
     </update>
 
     <update id="incrementByField">
-        update m4g_campaigns set
-            #{field} = #{field} + 1
+        update m4g_campaigns
+        <set>
+            <if test="field == 'deliver_count'">
+                deliver_count = deliver_count + 1
+            </if>
+            <if test="field == 'reject_count'">
+                reject_count = reject_count + 1
+            </if>
+            <if test="field == 'open_count'">
+                open_count = open_count + 1
+            </if>
+            <if test="field == 'permanent_bounce_count'">
+                permanent_bounce_count = permanent_bounce_count + 1
+            </if>
+            <if test="field == 'complaint_count'">
+                complaint_count = complaint_count + 1
+            </if>
+        </set>
         where id = #{id}
     </update>
 
