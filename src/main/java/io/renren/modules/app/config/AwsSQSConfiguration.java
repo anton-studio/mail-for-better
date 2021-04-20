@@ -44,7 +44,7 @@ public class AwsSQSConfiguration {
         SimpleMessageListenerContainerFactory factory = new SimpleMessageListenerContainerFactory();
         factory.setAmazonSqs(amazonSQSAsync);
         factory.setAutoStartup(true);
-        factory.setMaxNumberOfMessages(10);
+        factory.setMaxNumberOfMessages(1);
         factory.setTaskExecutor(createDefaultTaskExecutor());
         return factory;
     }
@@ -54,7 +54,7 @@ public class AwsSQSConfiguration {
         threadPoolTaskExecutor.setThreadNamePrefix("SQSExecutor - ");
         threadPoolTaskExecutor.setCorePoolSize(100);
         threadPoolTaskExecutor.setMaxPoolSize(100);
-        threadPoolTaskExecutor.setQueueCapacity(2);
+        threadPoolTaskExecutor.setQueueCapacity(1);
         threadPoolTaskExecutor.afterPropertiesSet();
         return threadPoolTaskExecutor;
     }
