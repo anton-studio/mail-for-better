@@ -54,6 +54,18 @@ public class M4gTemplatesController extends AbstractController {
         return R.ok().put("page", page);
     }
 
+    @Login
+    @GetMapping("/listpublic")
+    @RequiresPermissions("generator:m4gtemplates:list")
+    @ApiOperation("list")
+    public R listPublic(@RequestParam Map<String, Object> params){
+        QueryWrapper<M4gTemplatesEntity> wrapper = new QueryWrapper<>();
+        wrapper.lambda().eq(M4gTemplatesEntity::getIsPublic, 1l);
+        PageUtils page = m4gTemplatesService.queryPageWithCustomWrapper(params, wrapper);
+
+        return R.ok().put("page", page);
+    }
+
 
     /**
      * 信息
