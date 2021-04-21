@@ -55,6 +55,21 @@
         </set>
         where id = #{id}
     </update>
+    <select id="getAllStats" resultType="io.renren.modules.app.entity.StatsEntity">
+        select sum(complaint_count) as 'complaint_count',
+               sum(permanent_bounce_count) as 'bounce_count',
+               sum(total_sent_count) as 'sent_count',
+               DATE_FORMAT(create_time,'%Y%m%d') days from m4g_campaigns
+                group by days
+    </select>
+    <select id="getAllStatsById" resultType="io.renren.modules.app.entity.StatsEntity">
+        select sum(complaint_count) as 'complaint_count',
+                sum(permanent_bounce_count) as 'bounce_count',
+                sum(total_sent_count) as 'sent_count',
+                DATE_FORMAT(create_time,'%Y%m%d') days from m4g_campaigns
+                where owned_by = #{id}
+        group by days
+    </select>
 
 
 </mapper>

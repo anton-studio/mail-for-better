@@ -1,12 +1,15 @@
 package io.renren.modules.app.controller;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import io.renren.modules.app.annotation.Login;
 import io.renren.modules.app.annotation.LoginUser;
+import io.renren.modules.app.dao.M4gCampaignsDao;
 import io.renren.modules.app.entity.M4gTagsEntity;
+import io.renren.modules.app.entity.StatsEntity;
 import io.renren.modules.app.entity.UserEntity;
 import io.renren.modules.app.service.EmailService;
 import io.renren.modules.sys.controller.AbstractController;
@@ -14,6 +17,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import io.renren.modules.app.entity.M4gCampaignsEntity;
@@ -38,6 +42,9 @@ public class M4gCampaignsController extends AbstractController {
     private M4gCampaignsService m4gCampaignsService;
     @Autowired
     private EmailService emailService;
+
+    @Autowired
+    private M4gCampaignsDao campaignsDao;
 
     /**
      * 列表
@@ -116,6 +123,31 @@ public class M4gCampaignsController extends AbstractController {
     public R send(@PathVariable Long id){
         emailService.sendByCampaignId(id);
         return R.ok();
+    }
+
+    @Login
+    @GetMapping("/stats")
+    @RequiresPermissions("generator:m4gcampaigns:list")
+    @ApiOperation("list")
+    public R stats(@RequestParam Map<String, Object> params){
+        Long userId = getUserId();
+        if (userId != 1l) {
+            // sales
+            // todo: limit them
+            List<StatsEntity> allStats = campaignsDao.getAllStatsById(userId);
+            return R.ok().put("data", allStats);
+        } else {
+            // admin
+            List<StatsEntity> allStats;
+            if (!StringUtils.isEmpty(params.get("id")) ) {
+                Long id = Long.valueOf((String) params.get("id"));
+                allStats = campaignsDao.getAllStatsById(id);
+            } else {
+                allStats = campaignsDao.getAllStats();
+            }
+            return R.ok().put("data", allStats);
+        }
+
     }
 
 }
